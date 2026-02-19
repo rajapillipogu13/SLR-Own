@@ -7,7 +7,7 @@ import os
 # SETTINGS
 # ==============================
 SAVE_PATH = "dataset"
-CURRENT_LABEL = "M"        # 🔥 Change this when collecting
+CURRENT_LABEL = "T"        # 🔥 Change this when collecting
 IMG_SIZE = 128              # 🔥 Must match training size
 MAX_IMAGES = 500           # Number per class
 
