@@ -7,9 +7,9 @@ import os
 # SETTINGS
 # ==============================
 SAVE_PATH = "dataset"
-CURRENT_LABEL = "BACKSPACE"        # 🔥 Change this when collecting
+CURRENT_LABEL = "R"        # 🔥 Change this when collecting
 IMG_SIZE = 128              # 🔥 Must match training size
-MAX_IMAGES = 500           # Number per class
+MAX_IMAGES = 600           # Number per class
 
 # ==============================
 # CREATE FOLDER
@@ -34,7 +34,7 @@ cv2.resizeWindow(window_name, 1280, 720)
 
 connections = mp_hands.HAND_CONNECTIONS
 
-count = 0
+count = 280
 
 while True:
     ret, frame = cap.read()
@@ -103,7 +103,7 @@ while True:
                 # ==============================
                 key = cv2.waitKey(1) & 0xFF
 
-                if key == ord('s') and count < MAX_IMAGES:
+                if key == ord('g') and count < MAX_IMAGES:
                     filename = os.path.join(
                         SAVE_PATH,
                         CURRENT_LABEL,

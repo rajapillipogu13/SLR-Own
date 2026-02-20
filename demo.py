@@ -110,7 +110,7 @@ while True:
                           (x_min, y_min),
                           (x_max, y_max),
                           (0, 255, 0),
-                          3)
+                          2)
 
             # Small green prediction box
             box_height = 60
