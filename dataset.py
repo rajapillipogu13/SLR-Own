@@ -3,17 +3,13 @@ import mediapipe as mp
 import numpy as np
 import os
 
-# ==============================
 # SETTINGS
-# ==============================
-SAVE_PATH = "dataset"
-CURRENT_LABEL = "R"        # 🔥 Change this when collecting
-IMG_SIZE = 128              # 🔥 Must match training size
-MAX_IMAGES = 600           # Number per class
+SAVE_PATH = "test"
+CURRENT_LABEL = "A"        #Change this when collecting
+IMG_SIZE = 128              #Must match training size
+MAX_IMAGES = 1600           #Number per class
 
-# ==============================
 # CREATE FOLDER
-# ==============================
 os.makedirs(os.path.join(SAVE_PATH, CURRENT_LABEL), exist_ok=True)
 
 mp_hands = mp.solutions.hands
@@ -34,7 +30,8 @@ cv2.resizeWindow(window_name, 1280, 720)
 
 connections = mp_hands.HAND_CONNECTIONS
 
-count = 280
+count = 0
+
 
 while True:
     ret, frame = cap.read()
@@ -69,9 +66,7 @@ while True:
                            (255, 0, 0),
                            -1)
 
-            # ==============================
             # BOUNDING BOX (SAME AS APP)
-            # ==============================
             x_min = min([p[0] for p in points])
             y_min = min([p[1] for p in points])
             x_max = max([p[0] for p in points])
@@ -95,15 +90,13 @@ while True:
 
                 roi = cv2.resize(roi, (IMG_SIZE, IMG_SIZE))
 
-                # 🔥 If training in grayscale use this:
-                # roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+                #If training in grayscale use this:
+                #roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
 
-                # ==============================
                 # SAVE IMAGE WHEN 'S' PRESSED
-                # ==============================
                 key = cv2.waitKey(1) & 0xFF
 
-                if key == ord('g') and count < MAX_IMAGES:
+                if key == ord('q') and count < MAX_IMAGES:
                     filename = os.path.join(
                         SAVE_PATH,
                         CURRENT_LABEL,
