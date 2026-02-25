@@ -52,9 +52,7 @@ while True:
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = hands.process(rgb)
 
-    # ==============================
     # TOP CENTER WHITE SENTENCE BOX
-    # ==============================
     box_width = 1920
     box_height = 40
 
@@ -83,9 +81,7 @@ while True:
                 (0, 0, 0),
                 2)
 
-    # ==============================
     # HAND DETECTION
-    # ==============================
     if results.multi_hand_landmarks:
         for hand_landmarks in results.multi_hand_landmarks:
 
@@ -129,7 +125,7 @@ while True:
                           (0, 255, 0),
                           2)
 
-            # Small green prediction box
+            # Prediction box
             box_height = 60
             pred_y_min = max(0, y_min - box_height - 10)
             pred_y_max = y_min - 10
@@ -164,218 +160,216 @@ while True:
                 predicted_class_index = np.argmax(prediction)
                 confidence = np.max(prediction)
                 
-                # -------------------------------
                 # GEOMETRY CORRECTION BLOCK
-                # -------------------------------
-                if confidence < 0.93:  # Only override if not extremely confident
+                # if confidence < 0.93:  # Only override if not extremely confident
 
-                    wrist = points[0]
-                    thumb_tip = points[4]
-                    index_tip = points[8]
-                    middle_tip = points[12]
-                    ring_tip = points[16]
-                    pinky_tip = points[20]
+                #     wrist = points[0]
+                #     thumb_tip = points[4]
+                #     index_tip = points[8]
+                #     middle_tip = points[12]
+                #     ring_tip = points[16]
+                #     pinky_tip = points[20]
 
-                    # ---------------- A vs S ----------------
-                    if predicted_text in ["a", "s"]:
-                        index_mcp = points[5]
-                        if thumb_tip[0] < index_mcp[0]:
-                            predicted_text = "s"
-                        else:
-                            predicted_text = "a"
+                #     # Condition A vs S 
+                #     if predicted_text in ["a", "s"]:
+                #         index_mcp = points[5]
+                #         if thumb_tip[0] < index_mcp[0]:
+                #             predicted_text = "s"
+                #         else:
+                #             predicted_text = "a"
 
-                    # ---------------- D vs R/U/V ----------------
-                    if predicted_text in ["d", "r", "u", "v"]:
-                        extended = 0
-                        if index_tip[1] < wrist[1]: extended += 1
-                        if middle_tip[1] < wrist[1]: extended += 1
-                        if ring_tip[1] < wrist[1]: extended += 1
-                        if pinky_tip[1] < wrist[1]: extended += 1
+                #     # Condition D vs R/U/V
+                #     if predicted_text in ["d", "r", "u", "v"]:
+                #         extended = 0
+                #         if index_tip[1] < wrist[1]: extended += 1
+                #         if middle_tip[1] < wrist[1]: extended += 1
+                #         if ring_tip[1] < wrist[1]: extended += 1
+                #         if pinky_tip[1] < wrist[1]: extended += 1
 
-                        if extended == 1:
-                            predicted_text = "d"
+                #         if extended == 1:
+                #             predicted_text = "d"
 
-                    # ---------------- F vs B ----------------
-                    if predicted_text in ["f", "b"]:
+                #     # ---------------- F vs B ----------------
+                #     if predicted_text in ["f", "b"]:
 
-                        thumb_tip = points[4]
-                        index_tip = points[8]
-                        middle_tip = points[12]
-                        ring_tip = points[16]
-                        pinky_tip = points[20]
-                        wrist = points[0]
+                #         thumb_tip = points[4]
+                #         index_tip = points[8]
+                #         middle_tip = points[12]
+                #         ring_tip = points[16]
+                #         pinky_tip = points[20]
+                #         wrist = points[0]
 
-                        # Distance between thumb & index
-                        thumb_index_dist = np.linalg.norm(
-                            np.array(thumb_tip) - np.array(index_tip)
-                        )
+                #         # Distance between thumb & index
+                #         thumb_index_dist = np.linalg.norm(
+                #             np.array(thumb_tip) - np.array(index_tip)
+                #         )
 
-                        # Count extended fingers
-                        extended = 0
-                        if middle_tip[1] < wrist[1]: extended += 1
-                        if ring_tip[1] < wrist[1]: extended += 1
-                        if pinky_tip[1] < wrist[1]: extended += 1
+                #         # Count extended fingers
+                #         extended = 0
+                #         if middle_tip[1] < wrist[1]: extended += 1
+                #         if ring_tip[1] < wrist[1]: extended += 1
+                #         if pinky_tip[1] < wrist[1]: extended += 1
 
-                        # F → circle + fingers extended
-                        if thumb_index_dist < 40 and extended >= 2:
-                            predicted_text = "f"
+                #         # F → circle + fingers extended
+                #         if thumb_index_dist < 40 and extended >= 2:
+                #             predicted_text = "f"
 
-                        # B → no circle + fingers extended
-                        elif thumb_index_dist >= 40 and extended >= 3:
-                            predicted_text = "b"
+                #         # B → no circle + fingers extended
+                #         elif thumb_index_dist >= 40 and extended >= 3:
+                #             predicted_text = "b"
 
-                    # ---------------- G vs H ----------------
-                    if predicted_text in ["g", "h"]:
+                #     # ---------------- G vs H ----------------
+                #     if predicted_text in ["g", "h"]:
 
-                        index_tip = points[8]
-                        middle_tip = points[12]
-                        wrist = points[0]
+                #         index_tip = points[8]
+                #         middle_tip = points[12]
+                #         wrist = points[0]
 
-                        # Check if fingers are extended (above wrist)
-                        index_extended = index_tip[1] < wrist[1]
-                        middle_extended = middle_tip[1] < wrist[1]
+                #         # Check if fingers are extended (above wrist)
+                #         index_extended = index_tip[1] < wrist[1]
+                #         middle_extended = middle_tip[1] < wrist[1]
 
-                        # Check vertical alignment
-                        vertical_diff = abs(index_tip[1] - middle_tip[1])
+                #         # Check vertical alignment
+                #         vertical_diff = abs(index_tip[1] - middle_tip[1])
 
-                        # G: only index extended
-                        if index_extended and not middle_extended:
-                            predicted_text = "g"
+                #         # G: only index extended
+                #         if index_extended and not middle_extended:
+                #             predicted_text = "g"
 
-                        # H: both extended & roughly aligned
-                        elif index_extended and middle_extended and vertical_diff < 25:
-                            predicted_text = "h"
+                #         # H: both extended & roughly aligned
+                #         elif index_extended and middle_extended and vertical_diff < 25:
+                #             predicted_text = "h"
 
-                    # ---------------- T vs N ----------------
-                    if predicted_text in ["t", "n"]:
+                #     # ---------------- T vs N ----------------
+                #     if predicted_text in ["t", "n"]:
 
-                        thumb_tip = np.array(points[4])
-                        index_mcp = np.array(points[5])
-                        middle_mcp = np.array(points[9])
-                        ring_mcp = np.array(points[13])
+                #         thumb_tip = np.array(points[4])
+                #         index_mcp = np.array(points[5])
+                #         middle_mcp = np.array(points[9])
+                #         ring_mcp = np.array(points[13])
 
-                        # Compute horizontal midpoints
-                        midpoint_left = (index_mcp[0] + middle_mcp[0]) / 2
-                        midpoint_right = (middle_mcp[0] + ring_mcp[0]) / 2
+                #         # Compute horizontal midpoints
+                #         midpoint_left = (index_mcp[0] + middle_mcp[0]) / 2
+                #         midpoint_right = (middle_mcp[0] + ring_mcp[0]) / 2
 
-                        # If thumb is closer to index-middle region → T
-                        if thumb_tip[0] < midpoint_left:
-                            predicted_text = "t"
+                #         # If thumb is closer to index-middle region → T
+                #         if thumb_tip[0] < midpoint_left:
+                #             predicted_text = "t"
 
-                        # If thumb closer to middle-ring region → N
-                        elif thumb_tip[0] > midpoint_right:
-                            predicted_text = "n"
+                #         # If thumb closer to middle-ring region → N
+                #         elif thumb_tip[0] > midpoint_right:
+                #             predicted_text = "n"
 
-                        # Fallback
-                        else:
-                            predicted_text = "n"
+                #         # Fallback
+                #         else:
+                #             predicted_text = "n"
 
-                    # ---------------- W vs V/K ----------------
-                    if predicted_text in ["w", "v", "k"]:
-                        extended = 0
-                        if index_tip[1] < wrist[1]: extended += 1
-                        if middle_tip[1] < wrist[1]: extended += 1
-                        if ring_tip[1] < wrist[1]: extended += 1
+                #     # ---------------- W vs V/K ----------------
+                #     if predicted_text in ["w", "v", "k"]:
+                #         extended = 0
+                #         if index_tip[1] < wrist[1]: extended += 1
+                #         if middle_tip[1] < wrist[1]: extended += 1
+                #         if ring_tip[1] < wrist[1]: extended += 1
 
-                        if extended == 3:
-                            predicted_text = "w"
+                #         if extended == 3:
+                #             predicted_text = "w"
 
-                    # ---------------- Z / X / P ----------------
-                    if predicted_text in ["z", "x", "p"]:
+                #     # ---------------- Z / X / P ----------------
+                #     if predicted_text in ["z", "x", "p"]:
 
-                        wrist = np.array(points[0])
-                        index_tip = np.array(points[8])
-                        middle_tip = np.array(points[12])
-                        index_pip = np.array(points[6])
-                        index_mcp = np.array(points[5])
+                #         wrist = np.array(points[0])
+                #         index_tip = np.array(points[8])
+                #         middle_tip = np.array(points[12])
+                #         index_pip = np.array(points[6])
+                #         index_mcp = np.array(points[5])
 
-                        # Check extension direction
-                        index_up = index_tip[1] < wrist[1]
-                        index_down = index_tip[1] > wrist[1]
-                        middle_down = middle_tip[1] > wrist[1]
+                #         # Check extension direction
+                #         index_up = index_tip[1] < wrist[1]
+                #         index_down = index_tip[1] > wrist[1]
+                #         middle_down = middle_tip[1] > wrist[1]
 
-                        # Compute index finger bend angle
-                        v1 = index_pip - index_mcp
-                        v2 = index_tip - index_pip
-                        cos_angle = np.dot(v1, v2) / (
-                            np.linalg.norm(v1) * np.linalg.norm(v2) + 1e-6
-                        )
-                        angle = np.degrees(np.arccos(cos_angle))
+                #         # Compute index finger bend angle
+                #         v1 = index_pip - index_mcp
+                #         v2 = index_tip - index_pip
+                #         cos_angle = np.dot(v1, v2) / (
+                #             np.linalg.norm(v1) * np.linalg.norm(v2) + 1e-6
+                #         )
+                #         angle = np.degrees(np.arccos(cos_angle))
 
-                        # P → index + middle downward
-                        if index_down and middle_down:
-                            predicted_text = "p"
+                #         # P → index + middle downward
+                #         if index_down and middle_down:
+                #             predicted_text = "p"
 
-                        # Z → index straight upward
-                        elif index_up and angle > 150:
-                            predicted_text = "z"
+                #         # Z → index straight upward
+                #         elif index_up and angle > 150:
+                #             predicted_text = "z"
 
-                        # X → index bent
-                        else:
-                            predicted_text = "x"
+                #         # X → index bent
+                #         else:
+                #             predicted_text = "x"
 
-                    # ---------------- Q / P / SPACE ----------------
-                    if predicted_text in ["q", "p", "space"]:
+                #     # ---------------- Q / P / SPACE ----------------
+                #     if predicted_text in [ "p", "space"]:
 
-                        wrist = np.array(points[0])
-                        index_tip = np.array(points[8])
-                        middle_tip = np.array(points[12])
-                        ring_tip = np.array(points[16])
-                        pinky_tip = np.array(points[20])
+                #         wrist = np.array(points[0])
+                #         index_tip = np.array(points[8])
+                #         middle_tip = np.array(points[12])
+                #         ring_tip = np.array(points[16])
+                #         pinky_tip = np.array(points[20])
 
-                        # Check downward fingers
-                        index_down = index_tip[1] > wrist[1]
-                        middle_down = middle_tip[1] > wrist[1]
+                #         # Check downward fingers
+                #         index_down = index_tip[1] > wrist[1]
+                #         middle_down = middle_tip[1] > wrist[1]
 
-                        # Count upward extended fingers
-                        extended_up = 0
-                        if index_tip[1] < wrist[1]: extended_up += 1
-                        if middle_tip[1] < wrist[1]: extended_up += 1
-                        if ring_tip[1] < wrist[1]: extended_up += 1
-                        if pinky_tip[1] < wrist[1]: extended_up += 1
+                #         # Count upward extended fingers
+                #         extended_up = 0
+                #         if index_tip[1] < wrist[1]: extended_up += 1
+                #         if middle_tip[1] < wrist[1]: extended_up += 1
+                #         if ring_tip[1] < wrist[1]: extended_up += 1
+                #         if pinky_tip[1] < wrist[1]: extended_up += 1
 
-                        # P → two downward fingers
-                        if index_down and middle_down:
-                            predicted_text = "p"
+                #         # P → two downward fingers
+                #         if index_down and middle_down:
+                #             predicted_text = "p"
 
-                        # Q → only index downward
-                        elif index_down and not middle_down:
-                            predicted_text = "q"
+                #         # Q → only index downward
+                #         # elif index_down and not middle_down:
+                #         #     predicted_text = "q"
 
-                        # Space → open palm (3+ upward fingers)
-                        elif extended_up >= 3:
-                            predicted_text = "space"
+                #         # Space → open palm (3+ upward fingers)
+                #         elif extended_up >= 3:
+                #             predicted_text = "space"
                     
-                    # ---------------- OK / Minimize / G ----------------
-                    if predicted_text in ["ok", "minimize", "g"]:
+                #     # ---------------- OK / Minimize / G ----------------
+                #     if predicted_text in ["ok", "minimize", "g"]:
 
-                        thumb_tip = np.array(points[4])
-                        index_tip = np.array(points[8])
-                        middle_tip = np.array(points[12])
-                        ring_tip = np.array(points[16])
-                        pinky_tip = np.array(points[20])
-                        wrist = np.array(points[0])
+                #         thumb_tip = np.array(points[4])
+                #         index_tip = np.array(points[8])
+                #         middle_tip = np.array(points[12])
+                #         ring_tip = np.array(points[16])
+                #         pinky_tip = np.array(points[20])
+                #         wrist = np.array(points[0])
 
-                        thumb_index_dist = np.linalg.norm(thumb_tip - index_tip)
+                #         thumb_index_dist = np.linalg.norm(thumb_tip - index_tip)
 
-                        # Count extended fingers
-                        extended = 0
-                        if index_tip[1] < wrist[1]: extended += 1
-                        if middle_tip[1] < wrist[1]: extended += 1
-                        if ring_tip[1] < wrist[1]: extended += 1
-                        if pinky_tip[1] < wrist[1]: extended += 1
+                #         # Count extended fingers
+                #         extended = 0
+                #         if index_tip[1] < wrist[1]: extended += 1
+                #         if middle_tip[1] < wrist[1]: extended += 1
+                #         if ring_tip[1] < wrist[1]: extended += 1
+                #         if pinky_tip[1] < wrist[1]: extended += 1
 
-                        # OK → circle + multiple extended fingers
-                        if thumb_index_dist < 35 and extended >= 2:
-                            predicted_text = "ok"
+                #         # OK → circle + multiple extended fingers
+                #         if thumb_index_dist < 35 and extended >= 2:
+                #             predicted_text = "ok"
 
-                        # G → only index extended
-                        elif extended == 1:
-                            predicted_text = "g"
+                #         # G → only index extended
+                #         elif extended == 1:
+                #             predicted_text = "g"
 
-                        # Otherwise → Minimize
-                        else:
-                            predicted_text = "minimize"
+                #         # Otherwise → Minimize
+                #         else:
+                #             predicted_text = "minimize"
                 
 
                 # -------------------------------

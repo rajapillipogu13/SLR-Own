@@ -1,13 +1,12 @@
-import cv2
-import mediapipe as mp
-import numpy as np
+import cv2 # type:ignore
+import mediapipe as mp # type:ignore
+import numpy as np # type:ignore
 import os
 
-# SETTINGS
 SAVE_PATH = "test"
-CURRENT_LABEL = "A"        #Change this when collecting
-IMG_SIZE = 128              #Must match training size
-MAX_IMAGES = 1600           #Number per class
+CURRENT_LABEL = "A" 
+IMG_SIZE = 128
+MAX_IMAGES = 1600
 
 # CREATE FOLDER
 os.makedirs(os.path.join(SAVE_PATH, CURRENT_LABEL), exist_ok=True)
@@ -66,7 +65,7 @@ while True:
                            (255, 0, 0),
                            -1)
 
-            # BOUNDING BOX (SAME AS APP)
+            # BOUNDING BOX
             x_min = min([p[0] for p in points])
             y_min = min([p[1] for p in points])
             x_max = max([p[0] for p in points])
@@ -93,7 +92,7 @@ while True:
                 #If training in grayscale use this:
                 #roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
 
-                # SAVE IMAGE WHEN 'S' PRESSED
+                # SAVE IMAGE WHEN 'q' PRESSED
                 key = cv2.waitKey(1) & 0xFF
 
                 if key == ord('q') and count < MAX_IMAGES:
