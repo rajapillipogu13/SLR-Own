@@ -8,3 +8,11 @@ pandas==2.0.3
 scikit-learn==1.3.0
 protobuf==3.20.3
 h5py==3.9.0
+
+
+
+# https://github.com/rajapillipogu13/SLR-Own
+# git init
+# git add .
+# git commit -m "message"
+# git push -u origin master
