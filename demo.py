@@ -1,15 +1,90 @@
-from keras.models import model_from_json # type: ignore
-import cv2 # type: ignore
-import mediapipe as mp # type: ignore
-import numpy as np # type: ignore
+from tensorflow.keras.models import model_from_json # type: ignore
 from tensorflow.keras.models import load_model # type: ignore
-import json
+import mediapipe as mp # type: ignore
+import tensorflow as tf # type: ignore
+import numpy as np # type: ignore
+from collections import deque
+import json # type: ignore
+import cv2 # type: ignore
+
+
+# model = tf.keras.models.Sequential([
+#     tf.keras.layers.Input(shape=(128,128,3)),
+
+#     tf.keras.layers.Conv2D(16,(3,3),activation='relu'),
+#     tf.keras.layers.MaxPool2D(2,2),
+
+#     tf.keras.layers.Conv2D(32,(3,3),activation='relu'),
+#     tf.keras.layers.MaxPool2D(2,2),
+
+#     tf.keras.layers.Conv2D(64,(3,3),activation='relu'),
+#     tf.keras.layers.MaxPool2D(2,2),
+
+#     tf.keras.layers.GlobalAveragePooling2D(),
+
+#     tf.keras.layers.Dense(256,activation='relu'),
+#     tf.keras.layers.Dropout(0.5),
+
+#     tf.keras.layers.Dense(32,activation='softmax')
+# ])
+
+
+model = tf.keras.models.Sequential([
+    #
+    tf.keras.layers.Input(shape=(128,128,3)),
+    tf.keras.layers.Conv2D(16,(3,3), padding='same'),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Activation('relu'),
+    tf.keras.layers.Conv2D(16,(3,3), padding='same'),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Activation('relu'),
+    tf.keras.layers.MaxPool2D(2,2),
+    #
+    tf.keras.layers.Conv2D(32,(3,3), padding='same'),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Activation('relu'),
+    tf.keras.layers.Conv2D(32,(3,3), padding='same'),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Activation('relu'),
+    tf.keras.layers.MaxPool2D(2,2),
+    #
+    tf.keras.layers.Conv2D(64,(3,3), padding='same'),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Activation('relu'),
+    tf.keras.layers.Conv2D(64,(3,3), padding='same'),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Activation('relu'),
+    tf.keras.layers.MaxPool2D(2,2),
+    #
+    tf.keras.layers.Conv2D(128,(3,3), padding='same'),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Activation('relu'),
+    tf.keras.layers.Conv2D(128,(3,3), padding='same'),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Activation('relu'),
+    tf.keras.layers.MaxPool2D(2,2),
+    #
+    tf.keras.layers.GlobalAveragePooling2D(),
+    #
+    tf.keras.layers.Dense(128,activation='relu'),
+    tf.keras.layers.Dropout(0.5),
+    #
+    tf.keras.layers.Dense(32,activation='softmax')
+])
+
+
+pred_queue = deque(maxlen=10)
+stable_prediction = ""
+
+
+# model = load_model("fixed_model.h5", compile=False)
 
 # Load trained model
-model = load_model("pro_cnn_model.keras")
+#model = load_model("pro_cnn_model.keras")
+model.load_weights("cnn_upgrade_model.h5")
 
 # Load class labels
-with open("class_indices.json") as f:
+with open("models/class_indices.json") as f:
     class_indices = json.load(f)
 
 # Reverse mapping (index → label)
@@ -158,80 +233,20 @@ while True:
                 prediction = model.predict(hand_img, verbose=0)
                 predicted_class_index = np.argmax(prediction)
                 predicted_text = labels[predicted_class_index]
-                # if predicted_class_index == 0:
-                #     predicted_text = 'A'
-                # elif predicted_class_index == 1:
-                #     predicted_text = 'B'
-                # elif predicted_class_index == 2:
-                #     predicted_text = 'Backspace'
-                # elif predicted_class_index == 3:
-                #     predicted_text = 'C'
-                # elif predicted_class_index == 4:
-                #     predicted_text = 'Close'
-                # elif predicted_class_index == 5:
-                #     predicted_text = 'D'
-                # elif predicted_class_index == 6:
-                #     predicted_text = 'E'
-                # elif predicted_class_index == 7:
-                #     predicted_text = 'F'
-                # elif predicted_class_index == 8:
-                #     predicted_text = 'G'
-                # elif predicted_class_index == 9:
-                #     predicted_text = 'H'
-                # elif predicted_class_index == 10:
-                #     predicted_text = 'I'
-                # elif predicted_class_index == 11:
-                #     predicted_text = 'J'
-                # elif predicted_class_index == 12:
-                #     predicted_text = 'K'
-                # elif predicted_class_index == 13:
-                #     predicted_text = 'L'
-                # elif predicted_class_index == 14:
-                #     predicted_text = 'M'
-                # elif predicted_class_index == 15:
-                #     predicted_text = 'Minimize'
-                # elif predicted_class_index == 16:
-                #     predicted_text = 'N'
-                # elif predicted_class_index == 17:
-                #     predicted_text = 'Next'
-                # elif predicted_class_index == 18:
-                #     predicted_text = 'O'
-                # elif predicted_class_index == 19:
-                #     predicted_text = 'OK'
-                # elif predicted_class_index == 20:
-                #     predicted_text = 'P'
-                # elif predicted_class_index == 21:
-                #     predicted_text = 'Q'
-                # elif predicted_class_index == 22:
-                #     predicted_text = 'R'
-                # elif predicted_class_index == 23:
-                #     predicted_text = 'S'
-                # elif predicted_class_index == 24:
-                #     predicted_text = 'Space'
-                # elif predicted_class_index == 25:
-                #     predicted_text = 'T'
-                # elif predicted_class_index == 26:
-                #     predicted_text = 'U'
-                # elif predicted_class_index == 27:
-                #     predicted_text = 'V'
-                # elif predicted_class_index == 28:
-                #     predicted_text = 'W'
-                # elif predicted_class_index == 29:
-                #     predicted_text = 'X'
-                # elif predicted_class_index == 30:
-                #     predicted_text = 'Y'
-                # elif predicted_class_index == 31:
-                #     predicted_text = 'Z'
                 confidence = np.max(prediction)
 
-                if confidence > 0.85:
-                    predicted_text = labels[predicted_class_index]
-                else:
-                    predicted_text = ""
+                # -------------------------------
+                # STABILIZATION (Queue Smoothing)
+                # -------------------------------
+                
+                if confidence > 0.7:
+                    pred_queue.append(predicted_class_index)
 
-                #predicted_text = f"{labels[class_index]}"
-            else:
-                predicted_text = ""
+                if len(pred_queue) == 10:
+                    most_common = max(set(pred_queue), key=pred_queue.count)
+                    stable_prediction = labels[most_common]
+
+                predicted_text = stable_prediction
 
             cv2.putText(frame,
                         predicted_text,
