@@ -81,7 +81,7 @@ stable_prediction = ""
 
 # Load trained model
 #model = load_model("pro_cnn_model.keras")
-model.load_weights("cnn_upgrade_model.h5")
+model.load_weights("models/model_upgrade/cnn_upgrade_model.h5")
 
 # Load class labels
 with open("models/class_indices.json") as f:
@@ -172,13 +172,13 @@ while True:
                          points[connection[0]],
                          points[connection[1]],
                          (0, 255, 0),
-                         2)
+                         1)
 
             # Landmarks
             for point in points:
                 cv2.circle(frame,
                            point,
-                           3,
+                           2,
                            (255, 0, 0),
                            -1)
 
