@@ -1,8 +1,8 @@
-!git clone https://github.com/rajapillipogu13/split_dataset
+#!git clone https://github.com/rajapillipogu13/split_dataset
 
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.optimizers import RMSprop
+from tensorflow.keras.preprocessing.image import ImageDataGenerator # type: ignore
+from tensorflow.keras.preprocessing import image # type: ignore
+from tensorflow.keras.optimizers import RMSprop # type: ignore
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import numpy as np
